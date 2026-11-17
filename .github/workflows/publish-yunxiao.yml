@@ -1,0 +1,37 @@
+name: Publish to Yunxiao PyPI
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.14'
+      - name: Install build tools
+        run: python -m pip install build twine
+      - name: Test, build and check artifacts
+        run: |
+          python -m unittest discover -s tests
+          python -m build
+          python -m twine check --strict dist/*
+      - name: Upload to Yunxiao
+        env:
+          TWINE_REPOSITORY_URL: ${{ secrets.YUNXIAO_PYPI_URL }}
+          TWINE_USERNAME: ${{ secrets.YUNXIAO_PYPI_USERNAME }}
+          TWINE_PASSWORD: ${{ secrets.YUNXIAO_PYPI_PASSWORD }}
+          TWINE_NON_INTERACTIVE: '1'
+        run: |
+          : "${TWINE_REPOSITORY_URL:?Set the YUNXIAO_PYPI_URL repository secret}"
+          : "${TWINE_USERNAME:?Set the YUNXIAO_PYPI_USERNAME repository secret}"
+          : "${TWINE_PASSWORD:?Set the YUNXIAO_PYPI_PASSWORD repository secret}"
+          python -m twine upload dist/*

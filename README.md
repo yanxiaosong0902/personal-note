@@ -30,3 +30,17 @@ python3 -m venv .venv
 ```
 
 启动检查需要 macOS 图形会话，使用临时数据库。运行前先退出已经启动的个人便签，以免占用快捷键。
+
+## 自动发布到云效 PyPI
+
+将工作流和 `pyproject.toml` 推送到 GitHub 的 `main` 后，推送会触发测试、打包、制品校验和上传。Linux runner 只运行数据层测试并打包纯 Python 源码，应用本身在 macOS 上运行。
+
+在 GitHub 仓库的 **Settings → Secrets and variables → Actions** 新建下列仓库 Secrets。值取自云效 PyPI 仓库「推送」指南中对应的 `~/.pypirc` 配置。
+
+| Secret | 对应配置 |
+| --- | --- |
+| `YUNXIAO_PYPI_URL` | `repository` 的上传地址 |
+| `YUNXIAO_PYPI_USERNAME` | `username` |
+| `YUNXIAO_PYPI_PASSWORD` | `password` |
+
+每次发布新制品前，请更新 `pyproject.toml` 中的 `version`。如果当前版本已手动上传，首次推送工作流前也要更新版本，避免重复上传。
