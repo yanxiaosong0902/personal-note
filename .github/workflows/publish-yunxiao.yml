@@ -25,6 +25,7 @@ jobs:
           python -m build
           python -m twine check --strict dist/*
       - name: Upload to Yunxiao
+        if: ${{ secrets.YUNXIAO_PYPI_URL != '' && secrets.YUNXIAO_PYPI_USERNAME != '' && secrets.YUNXIAO_PYPI_PASSWORD != '' }}
         env:
           TWINE_REPOSITORY_URL: ${{ secrets.YUNXIAO_PYPI_URL }}
           TWINE_USERNAME: ${{ secrets.YUNXIAO_PYPI_USERNAME }}
